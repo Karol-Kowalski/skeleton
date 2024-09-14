@@ -1,0 +1,28 @@
+
+###> symfony/framework-bundle ###
+/.env.local
+/.env.local.php
+/.env.*.local
+.env
+/config/secrets/prod/prod.decrypt.private.php
+/public/bundles/
+/var/
+/vendor/
+###< symfony/framework-bundle ###
+
+/tools/**/vendor
+/.php-cs-fixer.cache
+/.php-cs-fixer.php
+/phpstan.neon
+/grump.yml
+/auth.json
+/tools/**/auth.json
+
+###> phpunit/phpunit ###
+/phpunit.xml
+/test/coverage
+###< phpunit/phpunit ###
+
+###> friends-of-behat/symfony-extension ###
+/behat.yml
+###< friends-of-behat/symfony-extension ###
