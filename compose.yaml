@@ -1,9 +1,58 @@
 services:
   app:
+    container_name: ${DOCKER_NAME}-app
     build: 
       context: .
-      dockerfile: ./Dockerfile
       target: dev
+    ports:
+      - ${APP_PORT:-80}:80
+    environment:
+      - PHP_IDE_CONFIG=${PHP_IDE_CONFIG}
+    depends_on:
+      - cache
+    networks:
+      - kennen-network
     volumes:
-      - ./:/app 
+      - ./:/app
+      - ./infra/docker/php/conf.d/zz-php.ini:/usr/local/etc/php/conf.d/zz-php.ini
+      - ./infra.docker/nginx/:/etc/nginx/conf.d/:ro
+
+  database:
+    image: postgres:${DATABASE_SERVER_VERSION}-alpine
+    container_name: ${DOCKER_NAME}-database
+    restart: on-failure
+    environment:
+      POSTGRES_USER: ${DOCKER_POSTGRES_USER:-root}
+      POSTGRES_PASSWORD: ${DOCKER_POSTGRES_PASSWORD:-root}
+      POSTGRES_DB: ${DOCKER_POSTGRES_DB}
+    ports:
+      - '${DOCKER_POSTGRES_PORT}:5432'
+    networks: 
+      - kennen-network
+
+  database-test:
+    image: postgres:${DATABASE_SERVER_VERSION}-alpine
+    container_name: ${DOCKER_NAME}-database-test
+    restart: on-failure
+    environment:
+      POSTGRES_USER: ${DOCKER_POSTGRES_USER:-root}
+      POSTGRES_PASSWORD: ${DOCKER_POSTGRES_PASSWORD:-root}
+      POSTGRES_DB: ${DOCKER_POSTGRES_TEST_DB}
+    ports:
+      - '${DOCKER_POSTGRES_TEST_PORT}:5432'
+    networks: 
+      - kennen-network
+
+  cache:
+    image: redis:6.2-alpine
+    container_name: ${DOCKER_NAME}-cache
+    restart: always
+    ports:
+      - '${DOCKER_REDIS_PORT}:6379'
+    networks: 
+      - kennen-network
+      
+networks:
+  kennen-network: 
+    external: true
 
